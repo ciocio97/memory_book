@@ -1,15 +1,21 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <TheLayout>
+    <RouterLink to="/read">Read</RouterLink>
+    <br/>
+    <RouterLink to="/write">Write</RouterLink>
+    <p>View</p>
+    <RouterView/>
+  </TheLayout>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import TheLayout from './components/TheLayout.vue';
+import './styles/global.css'; // global css
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    TheLayout
   }
 }
 </script>
@@ -21,6 +27,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
