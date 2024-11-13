@@ -1,0 +1,5 @@
+package com.memorybook.mvc.model.dto;
+
+public class User {
+
+}

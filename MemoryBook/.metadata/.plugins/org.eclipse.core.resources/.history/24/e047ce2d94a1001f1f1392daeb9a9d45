@@ -1,0 +1,6 @@
+package com.memorybook.mvc.model.service;
+
+public class MemoServiceImpl implements MemoService{
+
+	private MemoService memoService;
+}
