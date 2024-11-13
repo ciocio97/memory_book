@@ -1,0 +1,15 @@
+package com.memorybook.mvc.model.service;
+
+import org.springframework.stereotype.Service;
+
+import com.memorybook.mvc.model.dao.MemoDao;
+
+@Service
+public class MemoServiceImpl implements MemoService {
+	private final MemoDao memoDao;
+
+	public MemoServiceImpl(MemoDao memoDao) {
+		// TODO Auto-generated constructor stub
+		this.memoDao = memoDao;
+	}
+}

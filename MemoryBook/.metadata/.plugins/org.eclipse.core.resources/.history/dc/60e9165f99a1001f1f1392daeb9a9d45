@@ -1,0 +1,35 @@
+package com.memorybook.mvc.controller;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.memorybook.mvc.model.dto.Memo;
+import com.memorybook.mvc.model.service.MemoService;
+
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+
+
+@RestController
+@RequestMapping("/memo")
+public class MemoController {
+	private final MemoService memoService;
+
+	public MemoController(MemoService memoService) {
+		// TODO Auto-generated constructor stub
+		this.memoService = memoService;
+	}
+	
+	@GetMapping("")
+	public ResponseEntity<?> getMemos(@RequestHeader("userId") String reader) {
+		
+		List<Memo> memos = memoService.getMemosByReader(reader);
+		
+		return new ResponseEntity<>(null);
+	}
+	
+}

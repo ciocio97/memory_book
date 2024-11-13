@@ -1,0 +1,8 @@
+package com.memorybook.mvc;
+
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class memoController {
+
+}

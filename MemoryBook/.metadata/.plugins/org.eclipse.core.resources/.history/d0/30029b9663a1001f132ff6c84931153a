@@ -1,0 +1,5 @@
+package com.memorybook.mvc.config;
+
+public class MyBatisConfig {
+
+}

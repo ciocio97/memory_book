@@ -1,0 +1,10 @@
+package com.memorybook.mvc.config;
+
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.context.annotation.Configuration;
+
+@MapperScan
+@Configuration
+public class MyBatisConfig {
+
+}

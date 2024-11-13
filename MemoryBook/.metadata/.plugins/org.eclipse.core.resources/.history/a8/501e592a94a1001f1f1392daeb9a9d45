@@ -1,0 +1,8 @@
+package com.memorybook.mvc.model.service;
+
+public class UserServiceImpl implements UserService{
+
+	private UserService userService;
+	
+	
+}

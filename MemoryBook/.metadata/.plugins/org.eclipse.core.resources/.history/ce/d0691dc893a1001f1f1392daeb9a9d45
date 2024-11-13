@@ -1,0 +1,7 @@
+package com.memorybook.mvc.model.service;
+
+import org.springframework.stereotype.Service;
+
+public class MemoService {
+
+}
