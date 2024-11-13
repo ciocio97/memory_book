@@ -1,13 +1,11 @@
 <template>
-    <div>쓰기 페이지</div>
+  <div>쓰기 페이지</div>
 </template>
 
 <script>
 export default {
-  name: 'TheWriter'
-}
+  name: 'TheWriter',
+};
 </script>
 
-<style>
-
-</style>
+<style></style>
