@@ -8,4 +8,6 @@ public interface MemoDao {
 
 	List<Memo> selectByReader(String reader);
 
+	int insert(Memo memo);
+
 }

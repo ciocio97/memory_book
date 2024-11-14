@@ -1,0 +1,4 @@
+DROP DATABASE IF EXISTS memodb;
+CREATE SCHEMA memodb;
+
+USE memodb;

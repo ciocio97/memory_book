@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 
 
@@ -37,7 +40,7 @@ public class MemoController {
 		List<Memo> memos = memoService.getMemosByReader(reader);
 		if(memos == null) {
 			//받은 메모가 없음 -> 어떻게 처리할지??
-			return new ResponseEntity<>(null);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		//받은 메모들을 보내줌.
 		return new ResponseEntity<>(memos, HttpStatus.OK);
@@ -47,12 +50,19 @@ public class MemoController {
 	@PostMapping("")
 	public ResponseEntity<?> sendMemo(@RequestBody Map<String, String> memoMap, @RequestHeader("userId") String writer) {
 		//TODO: process POST request
-		boolean result = memoService.writeMemo(memoMap, writer);
-		if(!result) {
+		int memoId = memoService.writeMemo(memoMap, writer);
+		if(memoId == 0) {
 			// 작성 실패
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
-		return new ResponseEntity<>(null);
+		return new ResponseEntity<>(memoId,HttpStatus.OK);
+	}
+	
+	@PutMapping("/{id}")
+	public String putMethodName(@PathVariable String id, @RequestBody String entity) {
+		//TODO: process PUT request
+		
+		return entity;
 	}
 	
 }
