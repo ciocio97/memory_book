@@ -1,6 +1,7 @@
 package com.memorybook.mvc.model.dto;
 
 public class Memo {
+	private int memoId;
 	private String text;
 	private int imgNum;
 	private String writer;
@@ -47,5 +48,13 @@ public class Memo {
 
 	public void setWriter(String writer) {
 		this.writer = writer;
+	}
+
+	public int getMemoId() {
+		return memoId;
+	}
+
+	public void setMemoId(int memoId) {
+		this.memoId = memoId;
 	}	
 }

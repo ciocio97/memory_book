@@ -24,11 +24,19 @@ public class MemoServiceImpl implements MemoService {
 	}
 
 	@Override
-	public boolean writeMemo(Map<String, String> memoMap, String writer) {
+	public int writeMemo(Map<String, String> memoMap, String writer) {
 		// TODO Auto-generated method stub
 		Memo memo = new Memo();
 		memo.setWriter(writer);
 		memo.setImgNum(Integer.parseInt(memoMap.get("imgNum")));
-		return false;
+		memo.setReader(memoMap.get("reader"));
+		memo.setText(memoMap.get("text"));
+
+		int result = memoDao.insert(memo);
+
+		if (result == 0) {
+			return 0;
+		}
+		return memo.getMemoId();
 	}
 }
