@@ -87,15 +87,15 @@ const animation = () => {
 
   canvasContext.value.globalCompositeOperation = 'lighter';
 
-  // for (const star of stars) {
-  //   star.draw();
-  // }
+  for (const star of stars) {
+    star.draw();
+  }
 
-  // requestAnimationFrame(animation);
+  requestAnimationFrame(animation);
 };
 </script>
 
-<style>
+<style scoped>
 .layout {
   /* remove scroll width */
   position: absolute;
@@ -104,13 +104,11 @@ const animation = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid;
 
   .container {
     max-width: 320px;
     max-height: calc(100vh - 100px);
     overflow: hidden;
-    border: 1px solid;
   }
 }
 </style>

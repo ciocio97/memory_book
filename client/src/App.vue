@@ -1,10 +1,8 @@
 <template>
   <TheLayout>
     <RouterLink to="/read">Read</RouterLink>
-    <br/>
     <RouterLink to="/write">Write</RouterLink>
-    <p>View</p>
-    <RouterView/>
+    <RouterView />
   </TheLayout>
 </template>
 
@@ -15,9 +13,9 @@ import './styles/global.css'; // global css
 export default {
   name: 'App',
   components: {
-    TheLayout
-  }
-}
+    TheLayout,
+  },
+};
 </script>
 
 <style>
