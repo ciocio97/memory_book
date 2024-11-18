@@ -21,7 +21,7 @@ const onClickKakaoLoginButton = () => {
 };
 </script>
 
-<style>
+<style scoped>
 .logoContainer {
   margin-bottom: 40px;
   .mainLogo {
