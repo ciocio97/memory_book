@@ -25,7 +25,7 @@ onMounted(() => {
   initConst();
   initCanvas();
   initStars();
-  animation();
+  // animation();
 });
 
 const onResizeHandler = () => {
@@ -34,7 +34,7 @@ const onResizeHandler = () => {
 
   initCanvas();
   initStars();
-  animation();
+  // animation();
 };
 
 window.addEventListener('resize', debounce(onResizeHandler, 1000));
