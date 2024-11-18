@@ -87,11 +87,11 @@ const animation = () => {
 
   canvasContext.value.globalCompositeOperation = 'lighter';
 
-  for (const star of stars) {
-    star.draw();
-  }
+  // for (const star of stars) {
+  //   star.draw();
+  // }
 
-  requestAnimationFrame(animation);
+  // requestAnimationFrame(animation);
 };
 </script>
 
