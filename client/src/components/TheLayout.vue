@@ -3,6 +3,8 @@
     <div class="container">
       <slot></slot>
     </div>
+    <!-- todo: modal 추가 -->
+    <div></div>
   </div>
   <canvas ref="canvas" id="canvas"></canvas>
 </template>
