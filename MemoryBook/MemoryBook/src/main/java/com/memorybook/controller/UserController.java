@@ -1,10 +1,10 @@
-package com.memorybook.mvc.controller;
+package com.memorybook.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.memorybook.mvc.model.dto.User;
-import com.memorybook.mvc.model.service.UserService;
+import com.memorybook.model.dto.User;
+import com.memorybook.model.service.UserService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

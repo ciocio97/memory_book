@@ -1,8 +1,8 @@
-package com.memorybook.mvc.model.dao;
+package com.memorybook.model.dao;
 
 import java.util.List;
 
-import com.memorybook.mvc.model.dto.Memo;
+import com.memorybook.model.dto.Memo;
 
 public interface MemoDao {
 

@@ -1,4 +1,4 @@
-package com.memorybook.mvc;
+package com.memorybook;
 
 
 import org.springframework.boot.SpringApplication;
