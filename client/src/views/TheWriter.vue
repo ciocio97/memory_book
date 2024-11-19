@@ -1,7 +1,7 @@
 <template>
-  <div class="container">
-    <!-- <img class="title" src="../assets/images/create_memory_white.svg" /> -->
-    <!-- <div class="stickerContainer">
+  <div v-if="page === 0" class="container">
+    <p class="title">★ 을 골라줘</p>
+    <div class="stickerContainer">
       <div v-for="(image, index) in images">
         <button class="stickerButton">
           <img
@@ -12,36 +12,48 @@
           />
         </button>
       </div>
-    </div> -->
-    <!-- <button class="nextButton">
-      <img
-        class="next"
-        src="../assets/images/next.svg"
-        @click.once="onClickNextButton"
-      />
-    </button> -->
-    <img class="title" src="../assets/images/create_memo_white.svg" />
-    <div class="inputContainer">
-      <input class="input" />
     </div>
-    <button class="nextButton">
-      <img
-        class="next"
-        src="../assets/images/complete.svg"
-        @click.once="onClickNextButton"
-      />
-    </button>
+    <div class="buttonContainer">
+      <button class="button nextButton" @click.once="onClickNextButton">
+        다 음
+      </button>
+    </div>
+  </div>
+  <div v-else class="container">
+    <p class="title">♥ 도 남겨줄래</p>
+    <div class="textareaContainer">
+      <textarea class="textarea"></textarea>
+    </div>
+    <div class="buttonContainer">
+      <button class="button prevButton" @click.once="onClickPrevButton">
+        ←
+      </button>
+      <button class="button nextButton" @click.once="onClickCompleteButton">
+        전 송 !
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue';
+
 const modules = import.meta.glob('../assets/images/sticker/*.svg', {
   eager: true,
 });
 const images = [];
+const page = ref(0);
+
+const onClickPrevButton = () => {
+  page.value = 0;
+};
 
 const onClickNextButton = () => {
-  console.log('next button click');
+  page.value = 1;
+};
+
+const onClickCompleteButton = () => {
+  console.log('전 송 !');
 };
 
 const initImages = () => {
@@ -58,10 +70,16 @@ initImages();
 
 <style scoped>
 .container {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+
   background-color: rgb(255, 255, 255, 0.2);
-  padding: 1rem 0;
-  border: 7px solid rgba(127, 187, 255, 0.756);
-  border-radius: 4.5rem;
+  padding: 1.8rem 0;
+  border: 1px solid rgba(127, 187, 255, 0.1);
+  border-radius: 2rem;
   box-shadow:
     rgba(14, 63, 126, 0.04) 0px 0px 0px 1px,
     rgba(42, 51, 69, 0.04) 0px 1px 1px -0.5px,
@@ -71,21 +89,21 @@ initImages();
     rgba(14, 63, 126, 0.04) 0px 24px 24px -12px;
 
   .title {
-    width: 13rem;
-    color: white;
+    width: 100%;
+    font-size: 3rem;
+    color: #fff;
   }
 
   .stickerContainer {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    padding: 1rem 0 1rem 0;
+    gap: 1rem;
+    padding: 1rem 0;
 
     .stickerButton {
       width: 110px;
       border-radius: 5rem;
-      margin: 0 0.3rem;
-      margin-bottom: 0.6rem;
       background-color: rgb(255, 255, 255);
       box-shadow:
         rgba(0, 0, 0, 0.3) 0px 2px 4px,
@@ -97,25 +115,45 @@ initImages();
     }
   }
 
-  .inputContainer {
-    width: 235px;
-    height: 340px;
+  .textareaContainer {
+    height: 160px;
     padding: 1rem 2rem 1.5rem 2rem;
-    .input {
+    .textarea {
       width: 100%;
       height: 100%;
-      border-radius: 1rem;
+      border-radius: 0.5rem;
     }
   }
 
-  .nextButton {
-    width: 70%;
-    height: 50px;
-    border-radius: 1.5rem;
-    background-color: rgba(127, 187, 255, 0.8);
+  .buttonContainer {
+    width: 240px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 1;
+    gap: 0.5rem;
 
-    .next {
-      width: 3.5rem;
+    .button {
+      padding: 0.4rem 0;
+      border-radius: 1rem;
+      font-size: 2rem;
+      color: #fff;
+      background-color: rgba(127, 187, 255, 0.8);
+      cursor: pointer;
+      &:hover {
+        color: rgb(127, 187, 255);
+        background-color: rgb(255, 255, 255);
+        transition: 0.3s;
+      }
+
+      &.prevButton {
+        padding: 0.4rem 0.8rem;
+        height: 100%;
+      }
+
+      &.nextButton {
+        flex-grow: 1;
+      }
     }
   }
 }

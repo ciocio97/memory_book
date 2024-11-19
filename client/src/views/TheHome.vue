@@ -1,10 +1,9 @@
 <template>
   <div class="logoContainer">
-    <img
-      class="mainLogo"
-      src="../assets/images/main_logo_text.svg"
-      alt="please_leave_me_a_message"
-    />
+    <p class="logo">나의 우주에</p>
+    <p class="logo">너라는</p>
+    <p class="logo">☆ 을</p>
+    <p class="logo">남겨줘</p>
   </div>
   <button class="loginButtons" @click.once="onClickKakaoLoginButton">
     <img
@@ -24,8 +23,9 @@ const onClickKakaoLoginButton = () => {
 <style scoped>
 .logoContainer {
   margin-bottom: 40px;
-  .mainLogo {
-    width: 15rem;
+  .logo {
+    color: #fff;
+    font-size: 4rem;
   }
 }
 
