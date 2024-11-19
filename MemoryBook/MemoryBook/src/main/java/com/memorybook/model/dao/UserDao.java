@@ -1,6 +1,6 @@
-package com.memorybook.mvc.model.dao;
+package com.memorybook.model.dao;
 
-import com.memorybook.mvc.model.dto.User;
+import com.memorybook.model.dto.User;
 
 public interface UserDao {
 

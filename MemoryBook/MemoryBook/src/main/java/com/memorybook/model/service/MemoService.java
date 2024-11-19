@@ -1,9 +1,9 @@
-package com.memorybook.mvc.model.service;
+package com.memorybook.model.service;
 
 import java.util.List;
 import java.util.Map;
 
-import com.memorybook.mvc.model.dto.Memo;
+import com.memorybook.model.dto.Memo;
 
 public interface MemoService {
 

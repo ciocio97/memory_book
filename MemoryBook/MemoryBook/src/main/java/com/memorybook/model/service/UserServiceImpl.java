@@ -1,4 +1,4 @@
-package com.memorybook.mvc.model.service;
+package com.memorybook.model.service;
 
 import java.util.Random;
 import java.util.UUID;
@@ -6,8 +6,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
-import com.memorybook.mvc.model.dao.UserDao;
-import com.memorybook.mvc.model.dto.User;
+import com.memorybook.model.dao.UserDao;
+import com.memorybook.model.dto.User;
 
 @Service
 public class UserServiceImpl implements UserService {

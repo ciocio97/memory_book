@@ -1,4 +1,4 @@
-package com.memorybook.mvc.model.dto;
+package com.memorybook.model.dto;
 
 public class User {
 	private String userId;
