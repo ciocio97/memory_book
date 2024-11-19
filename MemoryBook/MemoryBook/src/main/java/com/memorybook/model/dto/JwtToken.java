@@ -11,8 +11,7 @@ public class JwtToken {
 	
 
 	public JwtToken( String accessToken, String refreshToken) {
-		super();
-		this.grantType = grantType;
+		this.grantType = "Bearer";
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;
 	}

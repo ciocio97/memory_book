@@ -8,4 +8,6 @@ public interface UserService {
 
 	User createUser(String email);
 
+	boolean existsbyId(String userId);
+
 }

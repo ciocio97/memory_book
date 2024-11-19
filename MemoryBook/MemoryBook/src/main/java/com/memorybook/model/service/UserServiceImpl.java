@@ -1,7 +1,6 @@
 package com.memorybook.model.service;
 
 import java.util.Random;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -23,7 +22,7 @@ public class UserServiceImpl implements UserService {
 	public String getUserId(String email) {
 		// TODO Auto-generated method stub
 		User user = userDao.getUser(email);
-		if(user == null) {
+		if (user == null) {
 			return null;
 		}
 		return user.getUserId();
@@ -51,5 +50,15 @@ public class UserServiceImpl implements UserService {
 			}
 		}
 		return user;
+	}
+
+	@Override
+	public boolean existsbyId(String userId) {
+		// TODO Auto-generated method stub
+		int result = userDao.selectById(userId);
+		if (result == 1) {
+			return true;
+		}
+		return false;
 	}
 }

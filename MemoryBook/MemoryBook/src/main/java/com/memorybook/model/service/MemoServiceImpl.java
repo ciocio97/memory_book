@@ -3,6 +3,7 @@ package com.memorybook.model.service;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.memorybook.model.dao.MemoDao;
@@ -19,24 +20,50 @@ public class MemoServiceImpl implements MemoService {
 
 	@Override
 	public List<Memo> getMemosByReader(String reader) {
-		// TODO Auto-generated method stub
-		return memoDao.selectByReader(reader);
+		try {
+			return memoDao.selectByReader(reader);			
+		} catch (DataAccessException e) {
+			throw new RuntimeException("Database error occurred while getting memos");
+		}
 	}
 
 	@Override
 	public int writeMemo(Map<String, String> memoMap, String writer) {
-		// TODO Auto-generated method stub
-		Memo memo = new Memo();
-		memo.setWriter(writer);
-		memo.setImgNum(Integer.parseInt(memoMap.get("imgNum")));
-		memo.setReader(memoMap.get("reader"));
-		memo.setText(memoMap.get("text"));
+		try {
+			// 데이터 유효성 검증
+			if (memoMap == null || memoMap.get("imgNum") == null || memoMap.get("reader") == null
+					|| memoMap.get("text") == null) {
+				throw new IllegalArgumentException("Memo data is incomplete. Required fields are missing.");
+			}
+			
+			// memo객체 생성
+			Memo memo = new Memo();
+			memo.setWriter(writer);
+			try {
+				memo.setImgNum(Integer.parseInt(memoMap.get("imgNum")));
 
-		int result = memoDao.insert(memo);
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException("Invalid imgNum. It must be a valid integer.", e);
+			}
+			memo.setReader(memoMap.get("reader"));
+			memo.setText(memoMap.get("text"));
 
-		if (result == 0) {
-			return 0;
+			int result = memoDao.insert(memo);
+
+			if (result == 0) {
+				throw new RuntimeException("Failed to insert memo into the database");
+			}
+			return memo.getMemoId();
+
+		} catch (DataAccessException e) {
+			// 데이터베이스 관련 예외 처리
+			throw new RuntimeException("Database error occurred while writing memo.", e);
+		} catch (IllegalArgumentException e) {
+			// 잘못된 입력 데이터 처리
+			throw e;
+		} catch (Exception e) {
+			// 기타 예상하지 못한 예외 처리
+			throw new RuntimeException("An unexpected error occurred while writing memo.", e);
 		}
-		return memo.getMemoId();
 	}
 }
