@@ -5,6 +5,7 @@
     <p class="logo">☆ 을</p>
     <p class="logo">남겨줘</p>
   </div>
+  <!-- todo: 자체제작 favicon 으로 변경 -->
   <button class="loginButtons" @click.once="onClickKakaoLoginButton">
     <img
       class="kakaoImage"

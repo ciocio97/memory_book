@@ -38,4 +38,5 @@ textarea {
   word-break: break-all;
   font-family: 'Hakgyoansim Nadeuri TTF L';
   font-size: 1.7rem;
+  resize: none;
 }

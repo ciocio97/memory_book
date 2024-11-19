@@ -1,5 +1,5 @@
 <template>
-  <div v-if="page === 0" class="container">
+  <div v-if="page === 0" class="wrapper-writer">
     <p class="title">★ 을 골라줘</p>
     <div class="stickerContainer">
       <button class="carouselButton" @click="onClickCarouselPrevButton">
@@ -15,16 +15,6 @@
       <button class="carouselButton" @click="onClickCarouselNextButton">
         >
       </button>
-      <!-- <div v-for="(image, index) in images">
-        <button class="stickerButton">
-          <img
-            :key="'sticker' + index"
-            :src="image.src"
-            :alt="'sticker' + index"
-            class="sticker"
-          />
-        </button>
-      </div> -->
     </div>
     <div class="buttonContainer">
       <button class="button nextButton" @click.once="onClickNextButton">
@@ -32,7 +22,7 @@
       </button>
     </div>
   </div>
-  <div v-else class="container">
+  <div v-else class="wrapper-writer">
     <p class="title">♥ 도 남겨줄래</p>
     <div class="textareaContainer">
       <textarea class="textarea"></textarea>
@@ -93,7 +83,7 @@ initImages();
 </script>
 
 <style scoped>
-.container {
+.wrapper-writer {
   width: 300px;
   display: flex;
   flex-direction: column;
@@ -114,11 +104,12 @@ initImages();
 
   .title {
     width: 100%;
-    font-size: 3rem;
+    font-size: 2.5rem;
     color: #fff;
   }
 
   .stickerContainer {
+    height: 160px; /* fix size */
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
@@ -139,6 +130,7 @@ initImages();
 
     .stickerButton {
       width: 120px;
+      height: 120px;
       border-radius: 30rem;
       margin: 0 1rem;
       background-color: rgb(255, 255, 255);
@@ -159,7 +151,7 @@ initImages();
   }
 
   .textareaContainer {
-    height: 160px;
+    height: 160px; /* fix size */
     padding: 1rem 2rem 1.5rem 2rem;
     .textarea {
       width: 100%;
@@ -179,7 +171,7 @@ initImages();
     .button {
       padding: 0.4rem 0;
       border-radius: 1rem;
-      font-size: 2rem;
+      font-size: 1.8rem;
       color: #fff;
       background-color: rgba(127, 187, 255, 0.8);
       cursor: pointer;
