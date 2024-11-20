@@ -39,7 +39,7 @@ public class OAuthController {
 	public ResponseEntity<?> kakaoLogin(@RequestParam("code") final String code) {
 		// 프론트가 받은 인가 코드 -> 엑세스 토큰 발급을 카카오 서버에 요청한다. -> 엑세스 토큰으로 카카오 API 서버에 저장되어 있는 정보를
 		// 요청함
-		System.out.println(code);
+		System.out.println("인가 코드: "+code);
 		// 1. 카카오 서버에 엑세스 토큰 요청
 		try {
 			String kakaoAccessToken = kakaoApiService.requestAccessToken(code);
@@ -47,7 +47,8 @@ public class OAuthController {
 			if (kakaoAccessToken == null) {
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed to retrieve Kakao access token.");
 			}
-
+			System.out.println("카카오 엑세스 토큰: "+kakaoAccessToken);
+			
 			// 2. 엑세스 토큰으로 사용자 정보 요청
 			KakaoUser kakaoUser = kakaoApiService.getUserInfo(kakaoAccessToken);
 			// 카카오 사용자 정보가 없을 경우
@@ -68,11 +69,13 @@ public class OAuthController {
 
 			String accessToken = jwtTokenProvider.createAccessToken(userId);
 			String refreshToken = refreshTokenService.createAndSaveRefreshToken(userId);
-
+			System.out.println("accessToken: "+ accessToken);
+			System.out.println("refreshToken: "+refreshToken);
 			// 5. JWT 반환
 			ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken).httpOnly(true).secure(true)
 					.path("/").maxAge(7 * 24 * 60 * 60).sameSite("Strict").build();
 			// .JavaScript 접근 방지.HTTPS에서만 전달.쿠키 유효 경로 설정.쿠키 유효 기간 설정 (7일).CSRF 공격 방지
+			
 			return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refreshCookie.toString()).body(accessToken);
 			// 리프레시 토큰 쿠키 설정, json 으로는 엑세스 토큰만 전달
 
