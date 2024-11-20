@@ -55,10 +55,6 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public boolean existsbyId(String userId) {
 		// TODO Auto-generated method stub
-		int result = userDao.selectById(userId);
-		if (result == 1) {
-			return true;
-		}
-		return false;
+		return userDao.selectById(userId);
 	}
 }

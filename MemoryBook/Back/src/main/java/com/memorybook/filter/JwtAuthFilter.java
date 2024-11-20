@@ -34,6 +34,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 
 		String accessToken = jwtTokenProvider.resolveAccessToken(request);
+		System.out.println("엑세스 토큰: "+accessToken);
 		try {
 			if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
 				// Access Token is valid
@@ -44,7 +45,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     return;
 				}
 				request.setAttribute("userId", userId);
-
+				System.out.println("엑세스 토큰 유효함: "+userId);
 			} else if (accessToken == null || !jwtTokenProvider.validateToken(accessToken)) {
 				// Access Token is expired -> 리프레시 토큰 검증 및 재발급
 				String refreshToken = jwtTokenProvider.resolveRefreshTokenFromCookie(request);
@@ -52,6 +53,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 				if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
 					// refresh token is valid
 					String userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
+					System.out.println("리프레시 토큰 유효함: "+userId);
 					if (userService.existsbyId(userId) && userId.equals(refreshTokenService.getUserIdByToken(refreshToken))) {
 						// 새로운 엑세스 토큰 발급
 						String newAccessToken = jwtTokenProvider.createAccessToken(userId);
@@ -70,6 +72,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 		} catch (Exception e) {
 			// 유효성 검증 실패
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed");
+			System.err.println(e);
 			return;
 		}
 
