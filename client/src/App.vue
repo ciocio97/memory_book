@@ -6,16 +6,9 @@
   </TheLayout>
 </template>
 
-<script>
+<script setup>
 import TheLayout from './components/TheLayout.vue';
 import './styles/global.css'; // global css
-
-export default {
-  name: 'App',
-  components: {
-    TheLayout,
-  },
-};
 </script>
 
 <style>

@@ -16,8 +16,46 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import axios from 'axios';
+
+const route = useRoute();
+
+onMounted(() => {
+  console.log('mounted');
+  const splittedUrl = window.location.href.split('?code=');
+  console.log(splittedUrl[1]);
+  if (splittedUrl.length === 2) {
+    console.log('login 시도');
+    const authorization_code = splittedUrl[1];
+    axios({
+      headers: {
+        withCredentials: true,
+      },
+      method: 'get',
+      url: 'http://localhost:8080/oauth/kakao/callback',
+      params: {
+        code: authorization_code,
+      },
+    })
+      .then((res) => {
+        console.log('성공');
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log('실패');
+        console.log(err);
+      });
+  }
+});
+
+const client_id = import.meta.env.VITE_KAKAO_OAUTH_API_KEY;
+const redirect_uri = 'http://localhost:3000';
+const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}`;
+
 const onClickKakaoLoginButton = () => {
-  console.log('kakao login button click');
+  window.location.assign(kakaoLoginUrl);
 };
 </script>
 
