@@ -6,7 +6,7 @@ import { createMemoryHistory, createRouter } from 'vue-router';
 const routes = [
   { path: '/', component: TheHome },
   { path: '/write', component: TheWriter },
-  { path: '/read', component: TheReader }
+  { path: '/read', component: TheReader },
 ];
 
 const router = createRouter({
