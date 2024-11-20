@@ -1,7 +1,0 @@
-package com.memorybook.mvc.model.service;
-
-
-@Service
-public class UserService {
-
-}
