@@ -4,23 +4,23 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.memorybook.intercptor.Interceptor;
+import com.memorybook.intercptor.MemoAccessInterceptor;
 
 
 @Configuration
-public class WebMvcConfig implements WebMvcConfigurer {
+public class WebConfig implements WebMvcConfigurer {
 	
-	private final Interceptor interceptor;
+	private final MemoAccessInterceptor memoAccessInterceptor;
 	
-	public WebMvcConfig(Interceptor interceptor) {
+	public WebConfig(MemoAccessInterceptor memoAccessInterceptor) {
 		// TODO Auto-generated constructor stub
-		this.interceptor = interceptor;
+		this.memoAccessInterceptor = memoAccessInterceptor;
 	}
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		// TODO Auto-generated method stub
-		registry.addInterceptor(interceptor).addPathPatterns("").excludePathPatterns("/oauth");
+		registry.addInterceptor(memoAccessInterceptor).addPathPatterns("/memo").excludePathPatterns("/oauth");
 	}
 	
 	
