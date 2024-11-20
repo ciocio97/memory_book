@@ -34,4 +34,4 @@ build/
 
 ### env ###
 .env
-.metadata/
+.metadata
