@@ -2,6 +2,7 @@ package com.memorybook.model.service;
 
 import java.util.Random;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
@@ -21,11 +22,16 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public String getUserId(String email) {
 		// TODO Auto-generated method stub
-		User user = userDao.getUser(email);
-		if (user == null) {
-			return null;
+		try {
+			User user = userDao.getUser(email);
+			if (user == null) {
+				return null;
+			}
+			return user.getUserId();
+
+		} catch (DataAccessException e) {
+			throw new RuntimeException("Faileds to get user into the database");
 		}
-		return user.getUserId();
 	}
 
 	@Override
@@ -40,16 +46,21 @@ public class UserServiceImpl implements UserService {
 		String nanoId = NanoIdUtils.randomNanoId(random, alphabet, 20);
 		user.setUserId(nanoId);
 
-		int result = userDao.insertUser(user);
-		if (result == 0) {
-			// 생성에 실패함, 생성 가능할 때 까지 nanoid 재생성
-			while (result == 0) {
-				nanoId = NanoIdUtils.randomNanoId(random, alphabet, 20);
-				user.setUserId(nanoId);
-				result = userDao.insertUser(user);
+		try {
+			int result = userDao.insertUser(user);
+			if (result == 0) {
+				// 생성에 실패함, 생성 가능할 때 까지 nanoid 재생성
+				while (result == 0) {
+					nanoId = NanoIdUtils.randomNanoId(random, alphabet, 20);
+					user.setUserId(nanoId);
+					result = userDao.insertUser(user);
+				}
 			}
+			return user;
+
+		} catch (DataAccessException e) {
+			throw new RuntimeException();
 		}
-		return user;
 	}
 
 	@Override
