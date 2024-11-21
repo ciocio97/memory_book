@@ -9,6 +9,9 @@ import com.memorybook.model.service.KakaoApiService;
 import com.memorybook.model.service.RefreshTokenService;
 import com.memorybook.model.service.UserService;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -39,7 +42,7 @@ public class OAuthController {
 	public ResponseEntity<?> kakaoLogin(@RequestParam("code") final String code) {
 		// 프론트가 받은 인가 코드 -> 엑세스 토큰 발급을 카카오 서버에 요청한다. -> 엑세스 토큰으로 카카오 API 서버에 저장되어 있는 정보를
 		// 요청함
-		System.out.println("인가 코드: "+code);
+		System.out.println("인가 코드: " + code);
 		// 1. 카카오 서버에 엑세스 토큰 요청
 		try {
 			String kakaoAccessToken = kakaoApiService.requestAccessToken(code);
@@ -47,8 +50,8 @@ public class OAuthController {
 			if (kakaoAccessToken == null) {
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed to retrieve Kakao access token.");
 			}
-			System.out.println("카카오 엑세스 토큰: "+kakaoAccessToken);
-			
+			System.out.println("카카오 엑세스 토큰: " + kakaoAccessToken);
+
 			// 2. 엑세스 토큰으로 사용자 정보 요청
 			KakaoUser kakaoUser = kakaoApiService.getUserInfo(kakaoAccessToken);
 			// 카카오 사용자 정보가 없을 경우
@@ -68,24 +71,30 @@ public class OAuthController {
 			// 4. JWT 토큰 생성 -> access & refresh 2 가지로 나눠서 프론트로 보내줘야 함.
 
 			String accessToken = jwtTokenProvider.createAccessToken(userId);
+			System.out.println("accessToken: " + accessToken);
 			String refreshToken = refreshTokenService.createAndSaveRefreshToken(userId);
-			System.out.println("accessToken: "+ accessToken);
-			System.out.println("refreshToken: "+refreshToken);
+			System.out.println("refreshToken: " + refreshToken);
+			String linkedToken = jwtTokenProvider.createLinkedToken(userId);
+			System.out.println(linkedToken);
+			
+			Map<String, String> loginResponse = new HashMap<>();
+			loginResponse.put("accessToken", accessToken);
+			loginResponse.put("linkedToken", linkedToken);
+			
 			// 5. JWT 반환
 			ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken).httpOnly(true).secure(true)
 					.path("/").maxAge(7 * 24 * 60 * 60).sameSite("Strict").build();
 			// .JavaScript 접근 방지.HTTPS에서만 전달.쿠키 유효 경로 설정.쿠키 유효 기간 설정 (7일).CSRF 공격 방지
-			
-			return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refreshCookie.toString()).body(accessToken);
-			// 리프레시 토큰 쿠키 설정, json 으로는 엑세스 토큰만 전달
+
+			return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refreshCookie.toString()).body(loginResponse);
+			// 리프레시 토큰 쿠키 설정, json 으로는 엑세스 토큰과 linkedtoken을 담은 만 전달
 
 		} catch (Exception e) {
 			// 클라이언트에 500번 코드 노출하지 않도록 추후에 수정하기
-			System.out.println("Error during Kakao login process"+ e);
+			System.out.println("Error during Kakao login process" + e);
 			return ResponseEntity.status(500).body("카카오 로그인 처리 중 문제가 발생했습니다.");
 		}
 	}
-
 
 	@GetMapping("/kakao/api")
 	public ResponseEntity<?> loginTest(String jwt) {

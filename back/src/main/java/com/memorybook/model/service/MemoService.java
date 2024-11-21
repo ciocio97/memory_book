@@ -10,4 +10,6 @@ public interface MemoService {
 	List<Memo> getMemosByReader(String reader);
 
 	int writeMemo(Map<String, String> memoMap, String writer);
+
+	int modifyReader(String memoId, String reader);
 }

@@ -10,4 +10,8 @@ public interface MemoDao {
 
 	int insert(Memo memo);
 
+	int updateReader(Memo memo);
+
+	Memo selectMemoById(int id);
+
 }

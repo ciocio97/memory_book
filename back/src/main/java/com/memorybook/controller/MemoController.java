@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.memorybook.model.dto.Memo;
+import com.memorybook.model.provider.JwtTokenProvider;
 import com.memorybook.model.service.MemoService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,26 +12,27 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+
 
 @RestController
 @RequestMapping("/memo")
 public class MemoController {
 	private final MemoService memoService;
+	private final JwtTokenProvider jwtTokenProvider;
 
-	public MemoController(MemoService memoService) {
+	public MemoController(MemoService memoService, JwtTokenProvider jwtTokenProvider,
+			JwtTokenProvider jwtTokenProvider2) {
 		// TODO Auto-generated constructor stub
 		this.memoService = memoService;
+		this.jwtTokenProvider = jwtTokenProvider2;
 	}
 
 	@Transactional
@@ -63,7 +65,6 @@ public class MemoController {
 	@Transactional
 	@PostMapping("")
 	public ResponseEntity<?> sendMemo(@RequestBody Map<String, String> memoMap, HttpServletRequest request) {
-		// TODO: process POST request
 		try {
 			String writer = (String) request.getAttribute("userId");
 			if (writer == null) {
@@ -76,15 +77,57 @@ public class MemoController {
 		} catch (IllegalArgumentException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error: "+e.getMessage());
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
 		}
 	}
 
-	@PutMapping("/{id}")
-	public String putMethodName(@PathVariable String id, @RequestBody String entity) {
+	@Transactional
+	@PutMapping("/{linkedtoken}")
+	public ResponseEntity<?> receiveMemo(@PathVariable("linkedtoken") String linkedToken) {
 		// TODO: process PUT request
 
-		return entity;
+	    if (linkedToken == null || linkedToken.trim().isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token is missing or empty.");
+	    }
+		try {
+			String reader = jwtTokenProvider.getUserIdFromLinkedToken(linkedToken);
+			if (reader == null) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+			}
+			String memoId = jwtTokenProvider.getMemoIdFromLinkedToken(linkedToken);
+			int result = memoService.modifyReader(memoId, reader);
+
+			if (result != 1) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Memo not found or cannot be modified.");
+			}
+
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error: "+e.getMessage());
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
+		}
 	}
 
+	@GetMapping("/{memoid}")
+	public ResponseEntity<?> getLinkedToken(@PathVariable("memoid") String memoId, HttpServletRequest request) {
+		try {
+		
+		String userId = (String) request.getAttribute("userId");
+		
+		String linkedToken = jwtTokenProvider.createLinkedTokenById(memoId, userId);
+		
+		return ResponseEntity.ok(linkedToken);
+			
+		} catch (Exception e) {
+			// 예상 못한 예외
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
+		}
+	}
+	
+	
 }
