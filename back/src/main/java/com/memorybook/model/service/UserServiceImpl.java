@@ -31,6 +31,9 @@ public class UserServiceImpl implements UserService {
 
 		} catch (DataAccessException e) {
 			throw new RuntimeException("Faileds to get user into the database");
+		} catch (Exception e) {
+			// 기타 예상하지 못한 예외 처리
+			throw new RuntimeException("An unexpected error occurred while finding userId.", e);
 		}
 	}
 
@@ -59,13 +62,23 @@ public class UserServiceImpl implements UserService {
 			return user;
 
 		} catch (DataAccessException e) {
-			throw new RuntimeException();
+			throw new RuntimeException("Faileds to create user into the database");
+		} catch (Exception e) {
+			// 기타 예상하지 못한 예외 처리
+			throw new RuntimeException("An unexpected error occurred while finding userId.", e);
 		}
 	}
 
 	@Override
 	public boolean existsbyId(String userId) {
 		// TODO Auto-generated method stub
-		return userDao.selectById(userId);
+		try {
+			return userDao.selectById(userId);
+		} catch (DataAccessException e) {
+			throw new RuntimeException("Faileds to find user into the database");
+		} catch (Exception e) {
+			// 기타 예상하지 못한 예외 처리
+			throw new RuntimeException("An unexpected error occurred while finding userId.", e);
+		}
 	}
 }

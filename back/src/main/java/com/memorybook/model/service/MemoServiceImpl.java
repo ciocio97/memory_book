@@ -21,7 +21,7 @@ public class MemoServiceImpl implements MemoService {
 	@Override
 	public List<Memo> getMemosByReader(String reader) {
 		try {
-			return memoDao.selectByReader(reader);			
+			return memoDao.selectByReader(reader);
 		} catch (DataAccessException e) {
 			throw new RuntimeException("Database error occurred while getting memos");
 		}
@@ -31,11 +31,11 @@ public class MemoServiceImpl implements MemoService {
 	public int writeMemo(Map<String, String> memoMap, String writer) {
 		try {
 			// 데이터 유효성 검증
-			if (memoMap == null || memoMap.get("imgNum") == null || memoMap.get("reader") == null
-					|| memoMap.get("text") == null) {
+			if (memoMap == null || memoMap.get("imgNum") == null || memoMap.get("text") == null) {
+				// reader can null
 				throw new IllegalArgumentException("Memo data is incomplete. Required fields are missing.");
 			}
-			
+
 			// memo객체 생성
 			Memo memo = new Memo();
 			memo.setWriter(writer);
@@ -50,7 +50,7 @@ public class MemoServiceImpl implements MemoService {
 
 			int result = memoDao.insert(memo);
 
-			if (result == 0) {
+			if (result != 1) {
 				throw new RuntimeException("Failed to insert memo into the database");
 			}
 			return memo.getMemoId();
@@ -64,6 +64,32 @@ public class MemoServiceImpl implements MemoService {
 		} catch (Exception e) {
 			// 기타 예상하지 못한 예외 처리
 			throw new RuntimeException("An unexpected error occurred while writing memo.", e);
+		}
+	}
+
+	@Override
+	public int modifyReader(String memoId, String reader) {
+		System.out.println(memoId);
+		int id = Integer.parseInt(memoId.trim());
+		System.out.println(id);
+		try {
+			Memo memo = memoDao.selectMemoById(id);
+			if (memo.getReader() != null) {
+				System.out.println(memo.getReader());
+				throw new IllegalArgumentException("A reader has already been assigned. You cannot set a new reader.");
+			}
+			System.out.println(memo.toString());
+			// reader가 null이면 갱신
+			
+			memo.setReader(reader); //새로운 리더로 set
+			
+			return memoDao.updateReader(memo);
+		} catch (DataAccessException e) {
+			// 데이터베이스 관련 예외 처리
+			throw new RuntimeException("Database error occurred while modifing memo.", e);
+		} catch (Exception e) {
+			// 기타 예상하지 못한 예외 처리
+			throw new RuntimeException("An unexpected error occurred while modifing memo.", e);
 		}
 	}
 }

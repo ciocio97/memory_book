@@ -21,19 +21,26 @@ import jakarta.servlet.http.HttpServletRequest;
 public class JwtTokenProvider {
 
 	private final SecretKey key;
+	private final SecretKey linkedKey;
 	private final long accessTokenExpTime;
 	private final long refreshTokenExpTime;
 
 	public JwtTokenProvider(@Value("${jwt.secret}") String secretKey,
+			@Value("${jwt.linked.secret}") String linkedSecretKey,
 			@Value("${jwt.expiration_time}") long accessTokenExpTime,
 			@Value("${jwt.refresh.expiration_time}") long refreshTokenExpTime) {
 		// TODO Auto-generated constructor stub
 		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+		byte[] LinkedKeyBytes = Decoders.BASE64.decode(linkedSecretKey);
 		// 키 길이 검증
 		if (keyBytes.length < 32) {
 			throw new IllegalArgumentException("The key must be at least 256 bits (32 bytes)");
 		}
+		if (LinkedKeyBytes.length < 32) {
+			throw new IllegalArgumentException("The linked key must be at least 256 bits (32 bytes)");
+		}
 		this.key = Keys.hmacShaKeyFor(keyBytes);
+		this.linkedKey = Keys.hmacShaKeyFor(LinkedKeyBytes);
 		this.accessTokenExpTime = accessTokenExpTime;
 		this.refreshTokenExpTime = refreshTokenExpTime;
 	}
@@ -97,5 +104,31 @@ public class JwtTokenProvider {
 		// 토큰에서 userId를 추출한다.
 		Claims claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
 		return claims.get("userId", String.class);
+	}
+
+	public String createLinkedToken(String userId) {
+		String token = Jwts.builder().header().add("typ", "JWT").and().claim("userId", userId).signWith(linkedKey)
+				.compact();
+
+		return token;
+	}
+
+	public String getUserIdFromLinkedToken(String linkedToken) {
+		// TODO Auto-generated method stub
+		Claims claims = Jwts.parser().verifyWith(linkedKey).build().parseSignedClaims(linkedToken).getPayload();
+		return claims.get("userId", String.class);
+	}
+
+	public String getMemoIdFromLinkedToken(String linkedToken) {
+		// TODO Auto-generated method stub
+		Claims claims = Jwts.parser().verifyWith(linkedKey).build().parseSignedClaims(linkedToken).getPayload();
+		return claims.get("memoId", String.class);
+	}
+
+	public String createLinkedTokenById(String memoId, String userId) {
+		String token = Jwts.builder().header().add("typ", "JWT").and().claim("userId", userId).claim("memoId", memoId)
+				.signWith(linkedKey).compact();
+
+		return token;
 	}
 }

@@ -10,4 +10,12 @@
 		SELECT * FROM memo
 		WHERE reader LIKE #{reader};
 	</select>
+	<select id="selectMemoById" parameterType="Integer" resultType="Memo">
+		SELECT * FROM memo
+		WHERE memo_id = #{id};
+	</select>
+	<update id="updateReader" parameterType="Memo">
+		UPDATE memo SET reader = #{reader}
+		WHERE memo_id = #{memoId};
+	</update>
 </mapper>
