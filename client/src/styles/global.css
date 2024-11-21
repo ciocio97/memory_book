@@ -1,0 +1,42 @@
+* {
+  margin: 0;
+  border: 0;
+  box-sizing: border-box;
+}
+
+@font-face {
+  font-family: 'Hakgyoansim Nadeuri TTF L';
+  font-weight: 400;
+  src: url('../assets/fonts/Hakgyoansim-Nadeuri-TTF-L.ttf') format('truetype');
+}
+
+body {
+  overflow: hidden; /* 이렇게 해결하는 게 맞냐 */
+  font-family: 'Hakgyoansim Nadeuri TTF L';
+  /* scrollbar style */
+  ::-webkit-scrollbar {
+    width: 0.4rem;
+    background-color: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 10rem;
+    background-color: #555555;
+  }
+  ::-webkit-scrollbar-track {
+    border-radius: 10rem;
+    background-color: #c7c7c7;
+  }
+}
+
+button {
+  font-family: 'Hakgyoansim Nadeuri TTF L';
+}
+
+textarea {
+  padding: 0.8rem 0.5rem 0.8rem 1rem;
+  word-wrap: break-word;
+  word-break: break-all;
+  font-family: 'Hakgyoansim Nadeuri TTF L';
+  font-size: 1.7rem;
+  resize: none;
+}

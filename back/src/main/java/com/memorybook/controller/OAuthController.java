@@ -86,6 +86,7 @@ public class OAuthController {
 		}
 	}
 
+
 	@GetMapping("/kakao/api")
 	public ResponseEntity<?> loginTest(String jwt) {
 		System.out.println(jwt);
