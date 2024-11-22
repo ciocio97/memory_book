@@ -21,7 +21,7 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		// TODO Auto-generated method stub
-		registry.addInterceptor(memoAccessInterceptor).addPathPatterns("/memo").excludePathPatterns("/oauth");
+		registry.addInterceptor(memoAccessInterceptor).addPathPatterns("/memo/**").excludePathPatterns("/oauth");
 	}
 
 	@Override

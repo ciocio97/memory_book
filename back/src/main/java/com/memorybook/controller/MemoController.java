@@ -44,7 +44,7 @@ public class MemoController {
 				System.out.println("Unauthorized access attempt");
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
 			}
-			List<Memo> memos = memoService.getMemosByReader(reader);
+			List<Map<String, Object>> memos = memoService.getMemosByReader(reader);
 			if (memos == null) {
 				// 받은 메모가 없음 -> 어떻게 처리할지??
 				System.out.println("No memos found for userId: " + reader);
@@ -52,6 +52,33 @@ public class MemoController {
 			}
 			// 받은 메모들을 보내줌.
 			return ResponseEntity.ok(memos);
+
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+
+		} catch (Exception e) {
+			System.out.println("Error retrieving memos");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error retrieving memos");
+		}
+	}
+	
+	@Transactional
+	@GetMapping("/detail/{memoid}")
+	public ResponseEntity<?> getMemoDetail(@PathVariable("memoid") String memoId, HttpServletRequest request) {
+		try {
+			String reader = (String) request.getAttribute("userId");
+			if (reader == null) {
+				System.out.println("Unauthorized access attempt");
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+			}
+			Memo memo = memoService.getMemoById(memoId);
+			if (memo == null || !memo.getReader().equals(reader)) {
+				// 받은 메모가 없음 -> 어떻게 처리할지??
+				System.out.println("No memo found for memoId: " + memoId);
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No memo found");
+			}
+			// 받은 메모 보내줌.
+			return ResponseEntity.ok(memo);
 
 		} catch (RuntimeException e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -71,6 +98,11 @@ public class MemoController {
 				System.out.println("Unauthorized access attempt to write memo");
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
 			}
+			
+			String reader = memoMap.get("linked_token"); //일단은 linked token을 넣는다.
+			if(reader != null) {
+				reader = jwtTokenProvider.getUserIdFromLinkedToken(reader);
+			}
 
 			int memoId = memoService.writeMemo(memoMap, writer);
 			return ResponseEntity.status(HttpStatus.CREATED).body(memoId);
@@ -84,15 +116,16 @@ public class MemoController {
 	}
 
 	@Transactional
-	@PutMapping("/{linkedtoken}")
-	public ResponseEntity<?> receiveMemo(@PathVariable("linkedtoken") String linkedToken) {
+	@PutMapping("")
+	public ResponseEntity<?> receiveMemo(@RequestBody String linkedToken, HttpServletRequest request) {
 		// TODO: process PUT request
 
 	    if (linkedToken == null || linkedToken.trim().isEmpty()) {
 	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token is missing or empty.");
 	    }
 		try {
-			String reader = jwtTokenProvider.getUserIdFromLinkedToken(linkedToken);
+//			String reader = jwtTokenProvider.getUserIdFromLinkedToken(linkedToken);
+			String reader = (String) request.getAttribute("userId");
 			if (reader == null) {
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
 			}
@@ -113,8 +146,8 @@ public class MemoController {
 		}
 	}
 
-	@GetMapping("/{memoid}")
-	public ResponseEntity<?> getLinkedToken(@PathVariable("memoid") String memoId, HttpServletRequest request) {
+	@GetMapping("/token")
+	public ResponseEntity<?> getLinkedToken(@RequestBody String memoId, HttpServletRequest request) {
 		try {
 		
 		String userId = (String) request.getAttribute("userId");

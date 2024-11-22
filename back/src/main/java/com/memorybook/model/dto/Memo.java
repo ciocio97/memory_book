@@ -11,13 +11,19 @@ public class Memo {
 		// TODO Auto-generated constructor stub
 	}
 
+	// memoId와 imgNum만 포함하는 생성자
+	public Memo(int memoId, int imgNum) {
+		this.memoId = memoId;
+		this.imgNum = imgNum;
+	}
+
 	public Memo(String text, int imgNum, String writer, String reader) {
 		this.text = text;
 		this.imgNum = imgNum;
 		this.writer = writer;
 		this.reader = reader;
 	}
-
+	
 	public String getText() {
 		return text;
 	}

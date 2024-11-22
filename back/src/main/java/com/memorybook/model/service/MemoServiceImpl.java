@@ -1,7 +1,9 @@
 package com.memorybook.model.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -19,11 +21,29 @@ public class MemoServiceImpl implements MemoService {
 	}
 
 	@Override
-	public List<Memo> getMemosByReader(String reader) {
+	public List<Map<String, Object>> getMemosByReader(String reader) {
 		try {
-			return memoDao.selectByReader(reader);
+			List<Memo> originalMemos = memoDao.selectByReader(reader);
+			List<Map<String, Object>> filteredMemos = originalMemos.stream().map(memo -> {
+				Map<String, Object> mempMap = new HashMap<>();
+				mempMap.put("memoId", memo.getMemoId());
+				mempMap.put("ingNum", memo.getImgNum());
+				return mempMap;
+			}).collect(Collectors.toList());
+			return filteredMemos;
 		} catch (DataAccessException e) {
 			throw new RuntimeException("Database error occurred while getting memos");
+		}
+	}
+
+	@Override
+	public Memo getMemoById(String memoId) {
+		try {
+			int id = Integer.parseInt(memoId.trim());
+
+			return memoDao.selectMemoById(id);
+		} catch (DataAccessException e) {
+			throw new RuntimeException("Database error occurred while getting memo");
 		}
 	}
 
@@ -80,9 +100,9 @@ public class MemoServiceImpl implements MemoService {
 			}
 			System.out.println(memo.toString());
 			// reader가 null이면 갱신
-			
-			memo.setReader(reader); //새로운 리더로 set
-			
+
+			memo.setReader(reader); // 새로운 리더로 set
+
 			return memoDao.updateReader(memo);
 		} catch (DataAccessException e) {
 			// 데이터베이스 관련 예외 처리
@@ -92,4 +112,5 @@ public class MemoServiceImpl implements MemoService {
 			throw new RuntimeException("An unexpected error occurred while modifing memo.", e);
 		}
 	}
+
 }
