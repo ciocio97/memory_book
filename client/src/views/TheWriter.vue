@@ -25,7 +25,7 @@
   <div v-else class="wrapper-writer">
     <p class="title">♥ 도 남겨줄래</p>
     <div class="textareaContainer">
-      <textarea class="textarea"></textarea>
+      <textarea class="textarea" :value="memo" @input="onInputText"></textarea>
     </div>
     <div class="buttonContainer">
       <button class="button prevButton" @click.once="onClickPrevButton">
@@ -39,14 +39,17 @@
 </template>
 
 <script setup>
-import { ref, useTemplateRef } from 'vue';
+import { ref } from 'vue';
+
+import axios from 'axios';
 
 const modules = import.meta.glob('../assets/images/sticker/*.svg', {
   eager: true,
 });
 const images = [];
-const page = ref(0); // sticker vs text
+const page = ref(0); // sticker vs memo
 const imageIndex = ref(0);
+const memo = ref('');
 
 const onClickCarouselPrevButton = () => {
   const index = imageIndex.value - 1;
@@ -66,7 +69,38 @@ const onClickNextButton = () => {
   page.value = 1;
 };
 
+const onInputText = (event) => {
+  const text = event.target.value;
+  memo.value = text;
+};
+
 const onClickCompleteButton = () => {
+  console.log(imageIndex.value); // 선택된 이미지 번호
+  console.log(memo.value); // 텍스트 내용
+  // console.log(localStorage.getItem('access_token'));
+
+  const access_token = localStorage.getItem('access_token');
+
+  axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+
+  axios({
+    headers: {
+      withCredentials: true,
+      // Authorization: `Bearer ${access_token}`,
+    },
+    method: 'post',
+    url: 'http://localhost:8080/memo',
+    data: {
+      imgNum: imageIndex.value,
+      text: memo.value,
+    },
+  })
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
   console.log('전 송 !');
 };
 

@@ -17,10 +17,11 @@
 </template>
 
 <script setup>
-import axios from 'axios';
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { isLogin } from '@/utils/user';
+
+import axios from 'axios';
 
 const router = useRouter();
 
