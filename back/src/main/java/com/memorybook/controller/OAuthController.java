@@ -82,7 +82,7 @@ public class OAuthController {
 			loginResponse.put("linkedToken", linkedToken);
 			
 			// 5. JWT 반환
-			ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken).httpOnly(true).secure(true)
+			ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken).httpOnly(true).secure(false)
 					.path("/").maxAge(7 * 24 * 60 * 60).sameSite("Strict").build();
 			// .JavaScript 접근 방지.HTTPS에서만 전달.쿠키 유효 경로 설정.쿠키 유효 기간 설정 (7일).CSRF 공격 방지
 
