@@ -32,7 +32,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-
+		
+		// CORS 프리플라이트 요청 처리
+	    if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+	        // CORS 프리플라이트 요청에 대해 허용 응답 설정
+	        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+	        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+	        response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+	        response.setHeader("Access-Control-Allow-Credentials", "true");
+	        response.setStatus(HttpServletResponse.SC_OK);
+	        return;
+	    }		
+		
 		String accessToken = jwtTokenProvider.resolveAccessToken(request);
 		System.out.println("엑세스 토큰: "+accessToken);
 		try {
