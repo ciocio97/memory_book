@@ -146,8 +146,8 @@ public class MemoController {
 		}
 	}
 
-	@GetMapping("/token")
-	public ResponseEntity<?> getLinkedToken(@RequestBody String memoId, HttpServletRequest request) {
+	@GetMapping("/token/{memoid}")
+	public ResponseEntity<?> getLinkedToken(@PathVariable("memoid") String memoId, HttpServletRequest request) {
 		try {
 		
 		String userId = (String) request.getAttribute("userId");
