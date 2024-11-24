@@ -1,7 +1,5 @@
 <template>
   <TheLayout>
-    <RouterLink to="/read">Read</RouterLink>
-    <RouterLink to="/write">Write</RouterLink>
     <RouterView />
   </TheLayout>
 </template>

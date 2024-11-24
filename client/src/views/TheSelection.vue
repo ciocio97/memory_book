@@ -6,7 +6,7 @@
     </div>
     <div class="faviconContainer">
       <div class="favicon">
-        <button class="button" @click.once="onClickShareLinkButton">
+        <button class="button" @click="onClickShareLinkButton">
           <img
             class="image"
             src="../assets/images/favicons/icon_blue_share.png"
@@ -42,7 +42,37 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 const onClickShareLinkButton = () => {
-  // todo: add kakao share api process
+  const linked_token = localStorage.getItem('linked_token');
+
+  if (linked_token === null) {
+    console.log('왜 linked_token 없냐 필수인데');
+  }
+
+  // kakao link share
+  const url = `http://localhost:3000?receiver=${linked_token}`;
+
+  Kakao.Share.sendDefault({
+    objectType: 'feed',
+    content: {
+      title: '나의 우주에 별을 남겨줘',
+      description: '나에게 편지를 써줘! 부탁해',
+      imageUrl:
+        'https://github.com/ciocio97/memory_book/blob/develop/client/src/assets/images/kakao_template_image.png',
+      link: {
+        mobileWebUrl: 'http://localhost:3000',
+        webUrl: 'http://localhost:3000',
+      },
+    },
+    buttons: [
+      {
+        title: '웹으로 보기',
+        link: {
+          mobileWebUrl: url,
+          webUrl: url,
+        },
+      },
+    ],
+  });
 };
 
 const onClickWriteMemoButton = () => {
