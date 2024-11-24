@@ -21,19 +21,56 @@ import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { isLogin } from '@/utils/user';
 
-import axios from 'axios';
+import { AXIOS, get, put } from '@/api';
+
+const client_id = import.meta.env.VITE_KAKAO_OAUTH_API_KEY;
+const javascript_key = import.meta.env.VITE_KAKAO_JAVASCRIPT_KEY;
 
 const router = useRouter();
 
 const initPage = () => {
+  sessionStorage.clear();
+
   let splittedUrl = window.location.href.split('?receiver=');
+  let receiver_token = null;
+  let sender_token = null;
 
   if (isLogin()) {
+    const access_token = localStorage.getItem('access_token');
+
+    AXIOS.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+
+    console.log('access_token 있음');
+
     if (splittedUrl.length === 2) {
       console.log('편지 써줘 url');
-      const linked_token = splittedUrl[1];
-      sessionStorage.setItem('receiver_token', linked_token);
+      receiver_token = splittedUrl[1];
+      sessionStorage.setItem('receiver_token', receiver_token);
       router.push('/write');
+      return;
+    }
+
+    splittedUrl = window.location.href.split('?sender=');
+
+    if (splittedUrl.length === 2) {
+      console.log('옛다 편지 url');
+      sender_token = splittedUrl[1];
+      // writer 지정 !!
+      // sessionStorage.setItem('sender_token', sender_token);
+
+      put('/memo', {
+        linked_token: sender_token,
+      })
+        .then((res) => {
+          console.log('writer 지정');
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log('writer 지정 에러');
+          console.log(err);
+        });
+
+      router.push('/read');
       return;
     }
 
@@ -47,8 +84,21 @@ const initPage = () => {
 
   if (splittedUrl.length === 2) {
     console.log('옛다 편지 url');
-    const linked_token = splittedUrl[1];
-    sessionStorage.setItem('sender_token', linked_token);
+    sender_token = splittedUrl[1];
+    // writer 지정 !!
+    // sessionStorage.setItem('sender_token', sender_token);
+
+    put('/memo', {
+      linked_token: sender_token,
+    })
+      .then((res) => {
+        console.log('writer 지정');
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log('writer 지정 에러');
+        console.log(err);
+      });
   }
 
   splittedUrl = window.location.href.split('?code=');
@@ -56,22 +106,24 @@ const initPage = () => {
   if (splittedUrl.length === 2) {
     console.log('로그인 시도');
     const authorization_code = splittedUrl[1];
-    axios({
-      headers: {
-        withCredentials: true,
-      },
-      method: 'get',
-      url: 'http://localhost:8080/oauth/kakao/callback',
-      params: {
-        code: authorization_code,
-      },
+
+    get('/oauth/kakao/callback', {
+      code: authorization_code,
     })
       .then((res) => {
         console.log('success login');
-        localStorage.setItem('access_token', res.data);
-        router.go(-1); // '?code=' parameter 제거 위한 방어 코드
+        const access_token = res.data.accessToken;
+        const linked_token = res.data.linkedToken;
 
-        if (sessionStorage.getItem('sender_token') !== null) {
+        localStorage.setItem('access_token', access_token);
+        localStorage.setItem('linked_token', linked_token);
+
+        AXIOS.defaults.headers.common['Authorization'] =
+          `Bearer ${access_token}`;
+
+        router.replace('/');
+
+        if (sender_token === null) {
           router.push('/select');
           return;
         }
@@ -89,13 +141,14 @@ onMounted(() => {
   initPage();
 });
 
-const client_id = import.meta.env.VITE_KAKAO_OAUTH_API_KEY;
 const redirect_uri = 'http://localhost:3000';
 const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}`;
 
 const onClickKakaoLoginButton = () => {
   window.location.assign(kakaoLoginUrl);
 };
+
+Kakao.init(javascript_key);
 </script>
 
 <style scoped>

@@ -32,7 +32,7 @@
         ←
       </button>
       <button class="button nextButton" @click.once="onClickCompleteButton">
-        전 송 !
+        전송 하기
       </button>
     </div>
   </div>
@@ -40,8 +40,11 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-import axios from 'axios';
+import { AXIOS, get, post } from '@/api';
+
+const router = useRouter();
 
 const modules = import.meta.glob('../assets/images/sticker/*.svg', {
   eager: true,
@@ -77,31 +80,51 @@ const onInputText = (event) => {
 const onClickCompleteButton = () => {
   console.log(imageIndex.value); // 선택된 이미지 번호
   console.log(memo.value); // 텍스트 내용
-  // console.log(localStorage.getItem('access_token'));
+
+  const receiver_token = sessionStorage.getItem('receiver_token');
+
+  if (receiver_token !== null) {
+    // 편지 받는 사람 당장 있음
+    console.log('편지 받는 사람 당장 있음');
+  } else {
+    // 편지 받는 사람 당장 없음 (링크 공유 후 생김)
+    console.log('편지 받는 사람 당장 없음 (링크 공유 후 생김)');
+  }
 
   const access_token = localStorage.getItem('access_token');
 
-  axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+  // 전역으로 설정했다고 생각했는데 매번 넣어줘야하는건가 ?
+  AXIOS.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
 
-  axios({
-    headers: {
-      withCredentials: true,
-      // Authorization: `Bearer ${access_token}`,
-    },
-    method: 'post',
-    url: 'http://localhost:8080/memo',
-    data: {
-      imgNum: imageIndex.value,
-      text: memo.value,
-    },
+  post('/memo', {
+    imgNum: imageIndex.value,
+    text: memo.value,
+    linked_token: receiver_token,
   })
     .then((res) => {
-      console.log(res);
+      if (res.status === 201) {
+        console.log('메모 생성 요청 성공');
+        console.log(res);
+        const memo_id = res.data;
+
+        if (receiver_token === null) {
+          // 새로운 writer token 발급
+          get(`/memo/token/${memo_id}`)
+            .then((res) => {
+              console.log(res);
+              sessionStorage.setItem('sender_token', res.data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+
+        router.push('/result');
+      }
     })
     .catch((err) => {
       console.log(err);
     });
-  console.log('전 송 !');
 };
 
 const initImages = () => {
