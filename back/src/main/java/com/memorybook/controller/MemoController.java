@@ -117,9 +117,10 @@ public class MemoController {
 
 	@Transactional
 	@PutMapping("")
-	public ResponseEntity<?> receiveMemo(@RequestBody String linkedToken, HttpServletRequest request) {
+	public ResponseEntity<?> receiveMemo(@RequestBody Map<String, String> requestBody, HttpServletRequest request) {
 		// TODO: process PUT request
-
+		String linkedToken = requestBody.get("linked_token");
+		
 	    if (linkedToken == null || linkedToken.trim().isEmpty()) {
 	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token is missing or empty.");
 	    }
