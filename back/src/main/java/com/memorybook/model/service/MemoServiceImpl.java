@@ -27,7 +27,7 @@ public class MemoServiceImpl implements MemoService {
 			List<Map<String, Object>> filteredMemos = originalMemos.stream().map(memo -> {
 				Map<String, Object> mempMap = new HashMap<>();
 				mempMap.put("memoId", memo.getMemoId());
-				mempMap.put("ingNum", memo.getImgNum());
+				mempMap.put("imgNum", memo.getImgNum());
 				return mempMap;
 			}).collect(Collectors.toList());
 			return filteredMemos;
@@ -100,7 +100,9 @@ public class MemoServiceImpl implements MemoService {
 			}
 			System.out.println(memo.toString());
 			// reader가 null이면 갱신
-
+			if (reader.equals(memo.getWriter())) {
+				throw new IllegalArgumentException("Invalid Access");
+			}
 			memo.setReader(reader); // 새로운 리더로 set
 
 			return memoDao.updateReader(memo);
