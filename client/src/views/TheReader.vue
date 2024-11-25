@@ -74,7 +74,7 @@ onMounted(() => {
         for (let item of data) {
           const memo = {
             id: item.memoId,
-            src: images[item.ingNum].src,
+            src: images[item.imgNum].src,
           };
 
           memos.push(memo);
