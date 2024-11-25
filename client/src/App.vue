@@ -11,12 +11,13 @@ import './styles/global.css'; // global css
 import { isLogin } from '@/utils/user';
 
 const router = useRouter();
+const javascript_key = import.meta.env.VITE_KAKAO_JAVASCRIPT_KEY;
+
+Kakao.init(javascript_key);
 
 // global navigation guard
 router.beforeEach((to, from, next) => {
   if (!isLogin()) {
-    console.log('로그인 하지 않은 사용자입니다');
-
     if (to.path === '/') {
       next();
       return;

@@ -17,6 +17,9 @@
       </button>
     </div>
     <div class="buttonContainer">
+      <button class="button prevButton" @click.once="onClickHomeButton">
+        ←
+      </button>
       <button class="button nextButton" @click.once="onClickNextButton">
         다 음
       </button>
@@ -77,18 +80,17 @@ const onInputText = (event) => {
   memo.value = text;
 };
 
-const onClickCompleteButton = () => {
-  console.log(imageIndex.value); // 선택된 이미지 번호
-  console.log(memo.value); // 텍스트 내용
+const onClickHomeButton = () => {
+  router.push('/');
+};
 
+const onClickCompleteButton = () => {
   const receiver_token = sessionStorage.getItem('receiver_token');
 
   if (receiver_token !== null) {
     // 편지 받는 사람 당장 있음
-    console.log('편지 받는 사람 당장 있음');
   } else {
     // 편지 받는 사람 당장 없음 (링크 공유 후 생김)
-    console.log('편지 받는 사람 당장 없음 (링크 공유 후 생김)');
   }
 
   const access_token = localStorage.getItem('access_token');
@@ -103,15 +105,12 @@ const onClickCompleteButton = () => {
   })
     .then((res) => {
       if (res.status === 201) {
-        console.log('메모 생성 요청 성공');
-        console.log(res);
         const memo_id = res.data;
 
         if (receiver_token === null) {
           // 새로운 writer token 발급
           get(`/memo/token/${memo_id}`)
             .then((res) => {
-              console.log(res);
               sessionStorage.setItem('sender_token', res.data);
             })
             .catch((err) => {
@@ -240,6 +239,7 @@ initImages();
 
       &.prevButton {
         padding: 0.4rem 0.8rem;
+        width: 50px;
         height: 100%;
       }
 

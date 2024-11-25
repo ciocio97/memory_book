@@ -1,17 +1,32 @@
 <template>
+  <!-- modal start -->
   <div v-show="isModalOpen" class="modalContainer">
     <div class="wrapper">
       <div class="textareaContainer">
-        <textarea readonly class="textarea">
-안녕하세요 내 편지는 테스트용입니다 안녕하세요 내 편지는 테스트용입니다 안녕하세요 내 편지는 테스트용입니다</textarea
-        >
+        <textarea readonly class="textarea">{{ memo }}</textarea>
       </div>
       <button class="button" @click="onClickCloseModalButton">닫 기</button>
     </div>
   </div>
-  <div class="wrapper-reader">
-    <!-- <div class="stickerContainer">
-      <button v-for="(memo, index) in memoList" class="stickerButton" @click="() => onClickStickerButton(item.id)">
+  <!-- modal end -->
+  <div v-if="!canRead">
+    <p class="description">편지 조회 가능한 날은</p>
+    <p class="description"><b>2024년 12월 9일</b></p>
+    <p class="description">입니다</p>
+    <button class="button" @click="onClickHomeButton">홈으로 가기</button>
+  </div>
+  <div v-else-if="!memoList.length && isFetched">
+    <p class="description">편지가 없어요 ㅠ.ㅠ</p>
+    <button class="button" @click="onClickHomeButton">홈으로 가기</button>
+  </div>
+  <div v-else-if="isFetched" class="wrapper-reader">
+    <div class="stickerContainer">
+      <button class="stickerButton" @click="onClickHomeButton">Home</button>
+      <button
+        v-for="(memo, index) in memoList"
+        class="stickerButton"
+        @click="() => onClickStickerButton(memo.id)"
+      >
         <img
           :key="'memo' + index"
           :src="memo.src"
@@ -19,29 +34,16 @@
           class="sticker"
         />
       </button>
-    </div> -->
-    <!-- test -->
-    <div class="stickerContainer">
-      <button
-        v-for="(item, index) in images"
-        class="stickerButton"
-        @click="() => onClickStickerButton(item.id)"
-      >
-        <img
-          :key="'sticker' + index"
-          :src="item.src"
-          :alt="'sticker' + index"
-          class="sticker"
-        />
-      </button>
     </div>
-    <!-- test -->
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue';
-import { get } from '@/api';
+import { useRouter } from 'vue-router';
+import { AXIOS, get } from '@/api';
+
+const router = useRouter();
 
 // sample sticker data
 const modules = import.meta.glob('../assets/images/sticker/*.svg', {
@@ -51,35 +53,46 @@ const modules = import.meta.glob('../assets/images/sticker/*.svg', {
 const images = [];
 const memoList = ref([]);
 const isModalOpen = ref(false);
+const memo = ref('');
+const canRead = ref(false);
+const isFetched = ref(false);
 
 onMounted(() => {
-  get('/memo')
-    .then((res) => {
-      console.log(res);
-      const data = res.data; // memo list
+  const access_token = localStorage.getItem('access_token');
 
-      memoList.value = [];
+  AXIOS.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
 
-      for (let item of data) {
-        const memo = {
-          id: item.memoId,
-          src: images[item.imgNum].src,
-        };
+  isFetched.value = false;
 
-        memoList.value.push(memo);
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  if (new Date('2024-12-09') < Date.now()) {
+    canRead.value = true;
+    get('/memo')
+      .then((res) => {
+        const data = res.data; // memo list
+        const memos = [];
+
+        for (let item of data) {
+          const memo = {
+            id: item.memoId,
+            src: images[item.ingNum].src,
+          };
+
+          memos.push(memo);
+        }
+
+        memoList.value = memos;
+        isFetched.value = true;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 });
 
 const onClickStickerButton = (id) => {
-  isModalOpen.value = true; // for test
-
   get(`/memo/detail/${id}`)
     .then((res) => {
-      console.log(res);
+      memo.value = res.data.text;
       isModalOpen.value = true;
     })
     .catch((err) => {
@@ -89,6 +102,10 @@ const onClickStickerButton = (id) => {
 
 const onClickCloseModalButton = () => {
   isModalOpen.value = false;
+};
+
+const onClickHomeButton = () => {
+  router.push('/');
 };
 
 const initImages = () => {
@@ -101,23 +118,11 @@ const initImages = () => {
 };
 
 initImages();
-initImages();
-initImages();
-initImages();
-initImages();
-initImages();
-initImages();
-initImages();
-initImages();
-initImages();
-initImages();
-initImages();
-initImages();
-initImages();
 </script>
 
 <style scopes>
 .wrapper-reader {
+  width: 320px;
   height: 100vh;
 
   .stickerContainer {
@@ -148,14 +153,20 @@ initImages();
       border-radius: 30rem;
       margin: 0.2rem;
       background-color: rgb(255, 255, 255);
+      font-size: 1.3rem;
+      cursor: pointer;
       box-shadow:
         rgba(0, 0, 0, 0.3) 0px 2px 4px,
         rgba(0, 0, 0, 0.2) 0px 7px 13px -3px,
         rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
 
-      &.on {
+      /* &.on {
         transform: scale(1.1) translate3d(1%, -1%, 1rem);
         transition: 0.2s;
+      } */
+
+      :hover {
+        opacity: 0.5;
       }
 
       .sticker {
@@ -197,29 +208,36 @@ initImages();
       }
     }
   }
+}
 
-  .button {
-    width: 100%;
-    padding: 0.4rem 0;
-    border-radius: 1rem;
-    font-size: 1.8rem;
-    color: #fff;
-    background-color: rgba(127, 187, 255, 0.8);
-    cursor: pointer;
-    &:hover {
-      color: rgb(127, 187, 255);
-      background-color: rgb(255, 255, 255);
-      transition: 0.1s;
-    }
-
-    &.prevButton {
-      padding: 0.4rem 0.8rem;
-      height: 100%;
-    }
-
-    &.nextButton {
-      flex-grow: 1;
-    }
+.button {
+  width: 100%;
+  padding: 0.4rem 0;
+  border-radius: 1rem;
+  margin-top: 1.5rem;
+  font-size: 1.8rem;
+  color: #fff;
+  background-color: rgba(127, 187, 255, 0.8);
+  cursor: pointer;
+  &:hover {
+    color: rgb(127, 187, 255);
+    background-color: rgb(255, 255, 255);
+    transition: 0.1s;
   }
+
+  &.prevButton {
+    padding: 0.4rem 0.8rem;
+    height: 100%;
+  }
+
+  &.nextButton {
+    flex-grow: 1;
+  }
+}
+
+.description {
+  font-size: 2rem;
+  color: #fff;
+  margin-bottom: 1rem;
 }
 </style>

@@ -24,7 +24,6 @@ import { isLogin } from '@/utils/user';
 import { AXIOS, get, put } from '@/api';
 
 const client_id = import.meta.env.VITE_KAKAO_OAUTH_API_KEY;
-const javascript_key = import.meta.env.VITE_KAKAO_JAVASCRIPT_KEY;
 
 const router = useRouter();
 
@@ -39,8 +38,6 @@ const initPage = () => {
     const access_token = localStorage.getItem('access_token');
 
     AXIOS.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
-
-    console.log('access_token 있음');
 
     if (splittedUrl.length === 2) {
       console.log('편지 써줘 url');
@@ -61,12 +58,8 @@ const initPage = () => {
       put('/memo', {
         linked_token: sender_token,
       })
-        .then((res) => {
-          console.log('writer 지정');
-          console.log(res);
-        })
+        .then((res) => {})
         .catch((err) => {
-          console.log('writer 지정 에러');
           console.log(err);
         });
 
@@ -91,12 +84,8 @@ const initPage = () => {
     put('/memo', {
       linked_token: sender_token,
     })
-      .then((res) => {
-        console.log('writer 지정');
-        console.log(res);
-      })
+      .then((res) => {})
       .catch((err) => {
-        console.log('writer 지정 에러');
         console.log(err);
       });
   }
@@ -104,7 +93,6 @@ const initPage = () => {
   splittedUrl = window.location.href.split('?code=');
 
   if (splittedUrl.length === 2) {
-    console.log('로그인 시도');
     const authorization_code = splittedUrl[1];
 
     get('/oauth/kakao/callback', {
@@ -131,7 +119,6 @@ const initPage = () => {
         router.push('/read');
       })
       .catch((err) => {
-        console.log('error');
         console.log(err);
       });
   }
@@ -147,8 +134,6 @@ const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?response_type=cod
 const onClickKakaoLoginButton = () => {
   window.location.assign(kakaoLoginUrl);
 };
-
-Kakao.init(javascript_key);
 </script>
 
 <style scoped>
